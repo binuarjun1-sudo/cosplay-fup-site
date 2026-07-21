@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Cosplay FUP</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo">FUP<span class="accent">.</span>ADMIN</div>
+  <div class="nav-links">
+    <a href="index.html">Gallery</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </div>
+</nav>
+
+<div id="login-section" class="admin-container">
+  <h2>Admin Login</h2>
+  <input type="text" id="username" placeholder="Username" />
+  <input type="password" id="password" placeholder="Password" />
+  <button id="login-btn">Log In</button>
+  <p id="login-error" class="error-text"></p>
+</div>
+
+<div id="dashboard-section" class="admin-container hidden">
+  <h2>Add New Cosplay</h2>
+  <input type="text" id="char-name" placeholder="Character Name" />
+  <input type="text" id="char-image" placeholder="Image URL" />
+  <button id="add-btn">Add Cosplay</button>
+  <p id="add-status" class="status-text"></p>
+
+  <h2>Manage Cosplays</h2>
+  <div id="admin-list"></div>
+  <button id="logout-btn">Log Out</button>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,24 +1,28 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
 from routes.characters import characters_bp
-from routes.leaderboard import leaderboard_bp
 from routes.auth import auth_bp
 
 load_dotenv()
 
-app = Flask(__name__)
+CLIENT_DIR = os.path.join(os.path.dirname(__file__), "..", "client")
+
+app = Flask(__name__, static_folder=CLIENT_DIR, static_url_path="")
 CORS(app)
 
 app.register_blueprint(characters_bp)
-app.register_blueprint(leaderboard_bp)
 app.register_blueprint(auth_bp)
 
 @app.route("/")
 def home():
-    return {"message": "Cosplay FUP Points API is running!"}
+    return send_from_directory(CLIENT_DIR, "index.html")
+
+@app.route("/<path:filename>")
+def serve_static(filename):
+    return send_from_directory(CLIENT_DIR, filename)
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
