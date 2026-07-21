@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosplay FUP — Leaderboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">FUP<span>.</span>VOTE</div>
+  <div class="nav-links">
+    <a href="index.html">Gallery</a>
+    <a href="leaderboard.html" class="active">Leaderboard</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Top FUP earners</div>
+  <h1>The <span class="accent">Leaderboard</span></h1>
+  <p>Ranked by FUP points. Switch the timeframe to see who's leading today, this week, this month, or ever.</p>
+</section>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-period="day">Today</button>
+  <button class="tab" data-period="week">This Week</button>
+  <button class="tab" data-period="month">This Month</button>
+  <button class="tab" data-period="all">All Time</button>
+</div>
+
+<div id="lb" class="lb-list"></div>
+
+<script src="app.js"></script>
+<script>
+const lb = document.getElementById("lb");
+const tabs = document.querySelectorAll(".tab");
+
+async function loadLeaderboard(period) {
+  lb.innerHTML = `<div class="loading">Loading leaderboard…</div>`;
+  try {
+    const res = await fetch(`${API_BASE}/api/leaderboard?period=${period}`);
+    const data = await res.json();
+
+    if (!data.length) {
+      lb.innerHTML = `<div class="empty">No FUP points given <b>in this timeframe</b> yet.</div>`;
+      return;
+    }
+
+    const maxPoints = data[0].points || 1;
+    lb.innerHTML = "";
+    data.forEach((entry, i) => {
+      const rank = i + 1;
+      const row = document.createElement("div");
+      row.className = `lb-row rank-${rank}`;
+      row.style.animationDelay = `${i * 0.06}s`;
+      const barWidth = Math.max(6, (entry.points / maxPoints) * 100);
+      row.innerHTML = `
+        <div class="lb-rank">${rank}</div>
+        <img class="lb-img" src="${entry.imageUrl}" alt="${entry.name}">
+        <div class="lb-name">${entry.name}</div>
+        <div class="lb-points">${entry.points}<small>FUP</small></div>
+        <div class="lb-bar" style="width:${barWidth}%"></div>
+      `;
+      lb.appendChild(row);
+    });
+  } catch (err) {
+    lb.innerHTML = `<div class="empty">Couldn't load the leaderboard. The server might be waking up — try again in a few seconds.</div>`;
+  }
+}
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    loadLeaderboard(tab.dataset.period);
+  });
+});
+
+loadLeaderboard("day");
+</script>
+</body>
+</html>
