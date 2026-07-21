@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 
 from routes.characters import characters_bp
+from routes.leaderboard import leaderboard_bp
 from routes.auth import auth_bp
 
 load_dotenv()
@@ -12,6 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.register_blueprint(characters_bp)
+app.register_blueprint(leaderboard_bp)
 app.register_blueprint(auth_bp)
 
 @app.route("/")
