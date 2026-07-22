@@ -3,113 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cosplay FUP — Vote</title>
+<title>Cosplay FUP - Vote</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<nav>
-  <div class="logo">FUP<span>.</span>VOTE</div>
+<nav class="navbar">
+  <div class="logo">FUP<span class="accent">.</span>VOTE</div>
   <div class="nav-links">
-    <a href="index.html" class="active">Gallery</a>
+    <a href="index.html">Gallery</a>
     <a href="leaderboard.html">Leaderboard</a>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="eyebrow">Cast your points</div>
-  <h1>Who's got the<br><span class="accent">FUP</span> factor?</h1>
+<div class="hero">
+  <h1>Who's got the <span class="accent">FUP</span> factor?</h1>
   <p>Browse the cosplays and give your favorite a FUP point. One vote per cosplay every 6 hours — make it count.</p>
-</section>
+</div>
 
-<div id="grid" class="grid"></div>
-<div id="toast" class="toast"></div>
+<div class="search-wrap">
+  <input type="text" id="search-input" placeholder="Search cosplays..." />
+</div>
+
+<div id="gallery" class="gallery-grid">
+  <p class="empty-text">Loading...</p>
+</div>
 
 <script src="app.js"></script>
-<script>
-const grid = document.getElementById("grid");
-const userId = getUserId();
-
-async function loadCharacters() {
-  grid.innerHTML = `<div class="loading">Loading cosplays…</div>`;
-  try {
-    const res = await fetch(`${API_BASE}/api/characters`);
-    const characters = await res.json();
-
-    if (!characters.length) {
-      grid.innerHTML = `<div class="empty">No cosplays uploaded <b>yet</b>. Check back soon.</div>`;
-      return;
-    }
-
-    grid.innerHTML = "";
-    characters.forEach((c, i) => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.animationDelay = `${i * 0.05}s`;
-      card.innerHTML = `
-        <img class="card-img" src="${c.imageUrl}" alt="${c.name}" loading="lazy">
-        <div class="card-body">
-          <div class="card-name">${c.name}</div>
-          <div class="card-points"><span class="flame">🔥</span> ${c.fupCount ?? 0} FUP points</div>
-          <button class="vote-btn" data-id="${c._id}">Give FUP</button>
-        </div>
-      `;
-      grid.appendChild(card);
-      checkVoteStatus(c._id, card.querySelector(".vote-btn"));
-    });
-
-    grid.querySelectorAll(".vote-btn").forEach(btn => {
-      btn.addEventListener("click", () => castVote(btn.dataset.id, btn));
-    });
-  } catch (err) {
-    grid.innerHTML = `<div class="empty">Couldn't load cosplays. The server might be waking up — try again in a few seconds.</div>`;
-  }
-}
-
-async function checkVoteStatus(characterId, btn) {
-  try {
-    const res = await fetch(`${API_BASE}/api/characters/${characterId}/vote-status?userId=${userId}`);
-    const data = await res.json();
-    if (!data.canVote) {
-      btn.disabled = true;
-      btn.textContent = timeLeftLabel(data.remainingSeconds || 0);
-    }
-  } catch (err) {
-  }
-}
-
-async function castVote(characterId, btn) {
-  btn.disabled = true;
-  const originalText = btn.textContent;
-  btn.textContent = "Voting…";
-  try {
-    const res = await fetch(`${API_BASE}/api/characters/${characterId}/vote`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId })
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      btn.classList.add("pulse");
-      showToast("FUP point given! 🔥");
-      const pointsEl = btn.closest(".card").querySelector(".card-points");
-      const current = parseInt(pointsEl.textContent.match(/\d+/)?.[0] || "0", 10);
-      pointsEl.innerHTML = `<span class="flame">🔥</span> ${current + 1} FUP points`;
-      checkVoteStatus(characterId, btn);
-    } else {
-      btn.disabled = false;
-      btn.textContent = originalText;
-      showToast(data.error || "Couldn't vote right now");
-    }
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = originalText;
-    showToast("Network error — try again");
-  }
-}
-
-loadCharacters();
-</script>
 </body>
 </html>
