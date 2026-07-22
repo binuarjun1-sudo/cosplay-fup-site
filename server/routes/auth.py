@@ -8,11 +8,11 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/api/auth/login", methods=["POST"])
 def login():
     data = request.json
-    username = data.get("username")
-    password = data.get("password")
+    username = (data.get("username") or "").strip()
+    password = (data.get("password") or "").strip()
 
-    admin_username = os.getenv("ADMIN_USERNAME")
-    admin_password = os.getenv("ADMIN_PASSWORD")
+    admin_username = (os.getenv("ADMIN_USERNAME") or "").strip()
+    admin_password = (os.getenv("ADMIN_PASSWORD") or "").strip()
 
     if username != admin_username or password != admin_password:
         return jsonify({"error": "Invalid credentials"}), 401
