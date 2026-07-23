@@ -5,6 +5,7 @@ const dashboardSection = document.getElementById("dashboard-section");
 const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const addBtn = document.getElementById("add-btn");
+const saveWelcomeBtn = document.getElementById("save-welcome-btn");
 
 function getToken() {
   return localStorage.getItem("adminToken");
@@ -14,6 +15,7 @@ function showDashboard() {
   loginSection.classList.add("hidden");
   dashboardSection.classList.remove("hidden");
   loadCharacters();
+  loadWelcomeMessage();
 }
 
 if (getToken()) {
@@ -50,6 +52,40 @@ logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("adminToken");
   dashboardSection.classList.add("hidden");
   loginSection.classList.remove("hidden");
+});
+
+async function loadWelcomeMessage() {
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`);
+    const data = await res.json();
+    document.getElementById("welcome-input").value = data.welcomeMessage;
+  } catch (err) {}
+}
+
+saveWelcomeBtn.addEventListener("click", async () => {
+  const message = document.getElementById("welcome-input").value;
+  const statusEl = document.getElementById("welcome-status");
+  statusEl.textContent = "";
+
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`
+      },
+      body: JSON.stringify({ welcomeMessage: message })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      statusEl.textContent = data.error || "Failed to save";
+      return;
+    }
+    statusEl.textContent = "Welcome message updated!";
+  } catch (err) {
+    statusEl.textContent = "Network error.";
+  }
 });
 
 addBtn.addEventListener("click", async () => {
