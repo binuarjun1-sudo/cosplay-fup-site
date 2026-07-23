@@ -11,3 +11,5 @@ db = client.get_database()
 
 characters_collection = db["characters"]
 votes_collection = db["votes"]
+vote_events_collection = db["vote_events"]
+settings_collection = db["settings"]

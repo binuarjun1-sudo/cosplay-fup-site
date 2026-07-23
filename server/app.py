@@ -5,6 +5,7 @@ import os
 
 from routes.characters import characters_bp
 from routes.auth import auth_bp
+from routes.settings import settings_bp
 
 load_dotenv()
 
@@ -15,6 +16,7 @@ CORS(app)
 
 app.register_blueprint(characters_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(settings_bp)
 
 @app.route("/")
 def home():
