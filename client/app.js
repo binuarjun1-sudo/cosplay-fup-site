@@ -11,6 +11,17 @@ function getUserId() {
 
 let allCharacters = [];
 
+async function loadWelcomeMessage() {
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`);
+    const data = await res.json();
+    document.getElementById("welcome-message").textContent = data.welcomeMessage;
+  } catch (err) {
+    document.getElementById("welcome-message").textContent =
+      "Browse the cosplays and give your favorite a FUP point.";
+  }
+}
+
 async function loadGallery() {
   const gallery = document.getElementById("gallery");
   gallery.innerHTML = '<p class="empty-text">Loading...</p>';
@@ -104,7 +115,6 @@ async function vote(id, btn) {
       return;
     }
 
-    btn.classList.add("pulse");
     loadGallery();
   } catch (err) {
     btn.disabled = false;
@@ -117,4 +127,5 @@ document.getElementById("search-input").addEventListener("input", (e) => {
   renderGallery(filtered);
 });
 
+loadWelcomeMessage();
 loadGallery();
