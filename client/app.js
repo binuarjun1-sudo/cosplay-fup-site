@@ -13,6 +13,15 @@ let allCharacters = [];
 let currentCommentCharId = null;
 let featuredInterval = null;
 
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 function showToast(message) {
   let container = document.getElementById("toast-container");
   if (!container) {
@@ -74,10 +83,10 @@ async function loadGallery() {
   try {
     const res = await fetch(`${API_BASE}/api/characters`);
     const characters = await res.json();
-    allCharacters = characters;
+    allCharacters = shuffleArray(characters);
     renderFeatured();
     startFeaturedRotation();
-    renderGallery(characters);
+    renderGallery(allCharacters);
   } catch (err) {
     gallery.innerHTML = '<p class="empty-text">Failed to load cosplays.</p>';
   }
