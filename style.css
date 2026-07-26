@@ -1,0 +1,155 @@
+
+/* Card entrance animation */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  animation: cardFadeIn 0.4s ease backwards;
+}
+
+/* Button press feedback (applies to all buttons) */
+button {
+  transition: transform 0.12s ease;
+}
+
+button:active {
+  transform: scale(0.94);
+}
+
+/* Vote button success pulse */
+@keyframes votePulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 106, 26, 0.6); }
+  100% { box-shadow: 0 0 0 16px rgba(255, 106, 26, 0); }
+}
+
+.vote-btn.pulse {
+  animation: votePulse 0.6s ease-out;
+}
+
+/* Count roll-up number animation */
+.card-count.updating {
+  animation: countPop 0.35s ease;
+}
+
+@keyframes countPop {
+  0% { transform: scale(1); color: #ff6a1a; }
+  50% { transform: scale(1.25); color: #ffb347; }
+  100% { transform: scale(1); color: #ff6a1a; }
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+  width: 90%;
+  max-width: 400px;
+}
+
+.toast {
+  background: #1a100b;
+  border: 1px solid #ff6a1a;
+  color: #f5f0eb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Loading skeleton cards */
+.skeleton-card {
+  background: #1a100b;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 260px;
+  position: relative;
+}
+
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,106,26,0.08), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 10px 30px 40px;
+}
+
+/* Featured / random pick card */
+.featured-wrap {
+  padding: 10px 30px 20px;
+}
+
+.featured-label {
+  color: #ff6a1a;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.featured-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #1a100b, #241610);
+  border: 1px solid #ff6a1a;
+  border-radius: 14px;
+  padding: 14px;
+  animation: cardFadeIn 0.5s ease;
+}
+
+.featured-card img {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.featured-info {
+  flex: 1;
+}
+
+.featured-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.featured-count {
+  color: #ff6a1a;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.featured-card .vote-btn {
+  margin-top: 10px;
+}

@@ -12,6 +12,21 @@ function getUserId() {
 let allCharacters = [];
 let currentCommentCharId = null;
 
+function showToast(message) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
 async function loadWelcomeMessage() {
   try {
     const res = await fetch(`${API_BASE}/api/settings`);
@@ -23,14 +38,38 @@ async function loadWelcomeMessage() {
   }
 }
 
+function renderFeatured(characters) {
+  const wrap = document.getElementById("featured-wrap");
+  if (!wrap || !characters.length) return;
+
+  const pick = characters[Math.floor(Math.random() * characters.length)];
+  wrap.innerHTML = `
+    <div class="featured-label">✨ RANDOM PICK FOR YOU</div>
+    <div class="featured-card">
+      <img src="${pick.imageUrl}" alt="${pick.name}" />
+      <div class="featured-info">
+        <div class="featured-name">${pick.name}</div>
+        <div class="featured-count">${pick.fupCount} FUP points</div>
+        <button class="vote-btn" data-id="${pick._id}">Give FUP Point</button>
+      </div>
+    </div>
+  `;
+  const btn = wrap.querySelector(".vote-btn");
+  checkVoteStatus(pick._id, btn);
+  btn.addEventListener("click", () => vote(pick._id, btn));
+}
+
 async function loadGallery() {
   const gallery = document.getElementById("gallery");
-  gallery.innerHTML = '<p class="empty-text">Loading...</p>';
+  gallery.innerHTML = '<div class="skeleton-grid">' +
+    Array(6).fill('<div class="skeleton-card"></div>').join("") +
+    '</div>';
 
   try {
     const res = await fetch(`${API_BASE}/api/characters`);
     const characters = await res.json();
     allCharacters = characters;
+    renderFeatured(characters);
     renderGallery(characters);
   } catch (err) {
     gallery.innerHTML = '<p class="empty-text">Failed to load cosplays.</p>';
@@ -46,9 +85,10 @@ function renderGallery(characters) {
   }
 
   gallery.innerHTML = "";
-  characters.forEach((c) => {
+  characters.forEach((c, i) => {
     const card = document.createElement("div");
     card.className = "card";
+    card.style.animationDelay = `${i * 0.05}s`;
     card.innerHTML = `
       <img src="${c.imageUrl}" alt="${c.name}" />
       <div class="card-body">
@@ -119,13 +159,19 @@ async function vote(id, btn) {
     if (!res.ok) {
       if (data.remainingSeconds) {
         startCooldown(btn, data.remainingSeconds);
+      } else {
+        showToast(data.error || "Something went wrong");
+        btn.disabled = false;
       }
       return;
     }
 
+    btn.classList.add("pulse");
+    showToast("Vote counted! 🎉");
     loadGallery();
   } catch (err) {
     btn.disabled = false;
+    showToast("Network error, try again");
   }
 }
 
@@ -196,6 +242,7 @@ document.getElementById("comment-submit-btn").addEventListener("click", async ()
     }
 
     input.value = "";
+    showToast("Comment posted!");
     loadComments(currentCommentCharId);
   } catch (err) {
     statusEl.textContent = "Network error.";
