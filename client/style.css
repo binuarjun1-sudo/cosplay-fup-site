@@ -502,3 +502,57 @@ button:active {
 .featured-card .vote-btn {
   margin-top: 10px;
 }
+
+/* Scroll-triggered fade in */
+.fade-target {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-target.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Leaderboard row entrance */
+.leaderboard-row {
+  animation: cardFadeIn 0.4s ease backwards;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.leaderboard-row:hover {
+  transform: translateX(4px);
+  border-color: #ff6a1a;
+}
+
+.leaderboard-row.top-rank {
+  border-color: #ff6a1a;
+  background: linear-gradient(90deg, #1a100b, #241610);
+}
+
+.leaderboard-rank {
+  font-size: 18px;
+  min-width: 32px;
+}
+
+/* Redesigned tab buttons */
+.tab-wrap {
+  gap: 8px;
+}
+
+.tab-btn {
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab-btn:hover {
+  border-color: #ff6a1a;
+  color: #f5f0eb;
+}
+
+.tab-btn.active {
+  box-shadow: 0 2px 10px rgba(255, 106, 26, 0.35);
+}
