@@ -556,3 +556,64 @@ button:active {
 .tab-btn.active {
   box-shadow: 0 2px 10px rgba(255, 106, 26, 0.35);
 }
+
+/* Nav layout fix */
+.navbar {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav-links a {
+  margin-left: 0;
+}
+
+.nav-links a.submit-link {
+  display: none;
+}
+
+/* Prominent Add Your Pic CTA button below hero */
+.cta-wrap {
+  padding: 0 30px 10px;
+}
+
+@keyframes ctaGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 26, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(255, 106, 26, 0);
+  }
+}
+
+@keyframes ctaShimmerBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.cta-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  background: linear-gradient(270deg, #ff6a1a, #cc4400, #ff6a1a);
+  background-size: 200% 200%;
+  color: #0d0705;
+  font-weight: bold;
+  font-size: 17px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #ff6a1a;
+  animation: ctaGlow 2.2s infinite ease-in-out, ctaShimmerBg 4s infinite ease-in-out;
+  transition: transform 0.15s ease;
+}
+
+.cta-btn:active {
+  transform: scale(0.97);
+}
