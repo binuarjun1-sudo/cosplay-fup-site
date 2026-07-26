@@ -16,6 +16,7 @@ function showDashboard() {
   dashboardSection.classList.remove("hidden");
   loadCharacters();
   loadWelcomeMessage();
+  loadSubmissions();
 }
 
 if (getToken()) {
@@ -156,5 +157,60 @@ async function loadCharacters() {
     });
   } catch (err) {
     listEl.innerHTML = "Failed to load cosplays.";
+  }
+}
+
+async function loadSubmissions() {
+  const listEl = document.getElementById("submissions-list");
+  listEl.innerHTML = "Loading...";
+
+  try {
+    const res = await fetch(`${API_BASE}/api/submissions`, {
+      headers: { "Authorization": `Bearer ${getToken()}` }
+    });
+    const submissions = await res.json();
+
+    if (!submissions.length) {
+      listEl.innerHTML = '<p class="empty-text">No pending submissions.</p>';
+      return;
+    }
+
+    listEl.innerHTML = "";
+    submissions.forEach((s) => {
+      const item = document.createElement("div");
+      item.className = "admin-item";
+      item.innerHTML = `
+        <img src="${s.imageUrl}" alt="${s.name}" />
+        <span>${s.name}</span>
+        <button data-id="${s._id}" class="approve-btn">Approve</button>
+        <button data-id="${s._id}" class="reject-btn delete-btn">Reject</button>
+      `;
+      listEl.appendChild(item);
+    });
+
+    document.querySelectorAll(".approve-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.target.getAttribute("data-id");
+        await fetch(`${API_BASE}/api/submissions/${id}/approve`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${getToken()}` }
+        });
+        loadSubmissions();
+        loadCharacters();
+      });
+    });
+
+    document.querySelectorAll(".reject-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const id = e.target.getAttribute("data-id");
+        await fetch(`${API_BASE}/api/submissions/${id}/reject`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${getToken()}` }
+        });
+        loadSubmissions();
+      });
+    });
+  } catch (err) {
+    listEl.innerHTML = "Failed to load submissions.";
   }
 }
