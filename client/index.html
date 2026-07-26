@@ -12,6 +12,7 @@
   <div class="nav-links">
     <a href="index.html">Gallery</a>
     <a href="leaderboard.html">Leaderboard</a>
+    <a href="submit.html">Add Your Pic</a>
   </div>
 </nav>
 
@@ -26,6 +27,21 @@
 
 <div id="gallery" class="gallery-grid">
   <p class="empty-text">Loading...</p>
+</div>
+
+<div id="comment-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span id="modal-title"></span>
+      <button id="modal-close">&times;</button>
+    </div>
+    <div id="comment-list" class="comment-list"></div>
+    <div class="comment-input-row">
+      <input type="text" id="comment-input" placeholder="Say something as FUP USER..." maxlength="300" />
+      <button id="comment-submit-btn">Post</button>
+    </div>
+    <p id="comment-status" class="status-text"></p>
+  </div>
 </div>
 
 <script src="app.js"></script>

@@ -10,6 +10,7 @@ function getUserId() {
 }
 
 let allCharacters = [];
+let currentCommentCharId = null;
 
 async function loadWelcomeMessage() {
   try {
@@ -54,6 +55,7 @@ function renderGallery(characters) {
         <div class="card-name">${c.name}</div>
         <div class="card-count">${c.fupCount} FUP points</div>
         <button class="vote-btn" data-id="${c._id}">Give FUP Point</button>
+        <button class="comment-btn" data-id="${c._id}" data-name="${c.name}">💬 Comments</button>
       </div>
     `;
     gallery.appendChild(card);
@@ -62,6 +64,12 @@ function renderGallery(characters) {
   document.querySelectorAll(".vote-btn").forEach((btn) => {
     checkVoteStatus(btn.getAttribute("data-id"), btn);
     btn.addEventListener("click", () => vote(btn.getAttribute("data-id"), btn));
+  });
+
+  document.querySelectorAll(".comment-btn").forEach((btn) => {
+    btn.addEventListener("click", () =>
+      openComments(btn.getAttribute("data-id"), btn.getAttribute("data-name"))
+    );
   });
 }
 
@@ -120,6 +128,79 @@ async function vote(id, btn) {
     btn.disabled = false;
   }
 }
+
+async function openComments(characterId, name) {
+  currentCommentCharId = characterId;
+  document.getElementById("modal-title").textContent = name;
+  document.getElementById("comment-modal").classList.remove("hidden");
+  document.getElementById("comment-status").textContent = "";
+  await loadComments(characterId);
+}
+
+document.getElementById("modal-close").addEventListener("click", () => {
+  document.getElementById("comment-modal").classList.add("hidden");
+});
+
+async function loadComments(characterId) {
+  const listEl = document.getElementById("comment-list");
+  listEl.innerHTML = "Loading...";
+  try {
+    const res = await fetch(`${API_BASE}/api/characters/${characterId}/comments`);
+    const comments = await res.json();
+
+    if (!comments.length) {
+      listEl.innerHTML = '<p class="empty-text">No comments yet. Be the first!</p>';
+      return;
+    }
+
+    listEl.innerHTML = "";
+    comments.forEach((c) => {
+      const item = document.createElement("div");
+      item.className = "comment-item";
+      item.innerHTML = `<span class="comment-author">FUP USER</span><p>${escapeHtml(c.text)}</p>`;
+      listEl.appendChild(item);
+    });
+  } catch (err) {
+    listEl.innerHTML = "Failed to load comments.";
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.getElementById("comment-submit-btn").addEventListener("click", async () => {
+  const input = document.getElementById("comment-input");
+  const text = input.value.trim();
+  const statusEl = document.getElementById("comment-status");
+  statusEl.textContent = "";
+
+  if (!text) {
+    statusEl.textContent = "Comment cannot be empty.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/characters/${currentCommentCharId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      statusEl.textContent = data.error || "Failed to post comment";
+      return;
+    }
+
+    input.value = "";
+    loadComments(currentCommentCharId);
+  } catch (err) {
+    statusEl.textContent = "Network error.";
+  }
+});
 
 document.getElementById("search-input").addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase().trim();
