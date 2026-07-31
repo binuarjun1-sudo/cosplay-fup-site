@@ -617,3 +617,31 @@ button:active {
 .cta-btn:active {
   transform: scale(0.97);
 }
+
+.upload-label {
+  display: block;
+  border: 2px dashed #3a2418;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #b8a99e;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.upload-label:hover {
+  border-color: #ff6a1a;
+}
+
+.file-input {
+  display: none;
+}
+
+.preview-img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}

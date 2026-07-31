@@ -34,7 +34,13 @@
 
   <h2>Add New Cosplay</h2>
   <input type="text" id="char-name" placeholder="Character Name" />
-  <input type="text" id="char-image" placeholder="Image URL" />
+
+  <label class="upload-label" for="char-image-file">
+    <span id="admin-upload-text">📷 Tap to choose a photo</span>
+  </label>
+  <input type="file" id="char-image-file" accept="image/*" class="file-input" />
+  <img id="admin-preview-img" class="preview-img hidden" />
+
   <button id="add-btn">Add Cosplay</button>
   <p id="add-status" class="status-text"></p>
 

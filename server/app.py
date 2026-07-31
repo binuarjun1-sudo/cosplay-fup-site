@@ -8,6 +8,7 @@ from routes.auth import auth_bp
 from routes.settings import settings_bp
 from routes.submissions import submissions_bp
 from routes.comments import comments_bp
+from routes.upload import upload_bp
 
 load_dotenv()
 
@@ -21,6 +22,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(settings_bp)
 app.register_blueprint(submissions_bp)
 app.register_blueprint(comments_bp)
+app.register_blueprint(upload_bp)
 
 @app.route("/")
 def home():

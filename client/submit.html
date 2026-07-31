@@ -22,7 +22,14 @@
 
 <div class="admin-container">
   <input type="text" id="sub-name" placeholder="Character / Cosplay Name" />
-  <input type="text" id="sub-image" placeholder="Image URL" />
+
+  <label class="upload-label" for="sub-image-file">
+    <span id="upload-preview-text">📷 Tap to choose a photo</span>
+  </label>
+  <input type="file" id="sub-image-file" accept="image/*" class="file-input" />
+
+  <img id="preview-img" class="preview-img hidden" />
+
   <button id="sub-btn">Submit for Review</button>
   <p id="sub-status" class="status-text"></p>
 </div>

@@ -6,6 +6,25 @@ const loginBtn = document.getElementById("login-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const addBtn = document.getElementById("add-btn");
 const saveWelcomeBtn = document.getElementById("save-welcome-btn");
+const charImageFile = document.getElementById("char-image-file");
+const adminPreviewImg = document.getElementById("admin-preview-img");
+const adminUploadText = document.getElementById("admin-upload-text");
+
+let selectedAdminFile = null;
+
+charImageFile.addEventListener("change", () => {
+  const file = charImageFile.files[0];
+  if (!file) return;
+  selectedAdminFile = file;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    adminPreviewImg.src = e.target.result;
+    adminPreviewImg.classList.remove("hidden");
+    adminUploadText.textContent = "✅ " + file.name;
+  };
+  reader.readAsDataURL(file);
+});
 
 function getToken() {
   return localStorage.getItem("adminToken");
@@ -91,37 +110,60 @@ saveWelcomeBtn.addEventListener("click", async () => {
 
 addBtn.addEventListener("click", async () => {
   const name = document.getElementById("char-name").value;
-  const imageUrl = document.getElementById("char-image").value;
   const statusEl = document.getElementById("add-status");
   statusEl.textContent = "";
 
-  if (!name || !imageUrl) {
-    statusEl.textContent = "Please fill in both fields.";
+  if (!name || !selectedAdminFile) {
+    statusEl.textContent = "Please add a name and choose a photo.";
     return;
   }
 
+  addBtn.disabled = true;
+  statusEl.textContent = "Uploading...";
+
   try {
+    const formData = new FormData();
+    formData.append("image", selectedAdminFile);
+
+    const uploadRes = await fetch(`${API_BASE}/api/upload`, {
+      method: "POST",
+      body: formData
+    });
+    const uploadData = await uploadRes.json();
+
+    if (!uploadRes.ok) {
+      statusEl.textContent = uploadData.error || "Upload failed";
+      addBtn.disabled = false;
+      return;
+    }
+
     const res = await fetch(`${API_BASE}/api/characters`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
       },
-      body: JSON.stringify({ name, imageUrl })
+      body: JSON.stringify({ name, imageUrl: uploadData.imageUrl })
     });
     const data = await res.json();
 
     if (!res.ok) {
       statusEl.textContent = data.error || "Failed to add cosplay";
+      addBtn.disabled = false;
       return;
     }
 
     statusEl.textContent = "Cosplay added!";
     document.getElementById("char-name").value = "";
-    document.getElementById("char-image").value = "";
+    charImageFile.value = "";
+    adminPreviewImg.classList.add("hidden");
+    adminUploadText.textContent = "📷 Tap to choose a photo";
+    selectedAdminFile = null;
+    addBtn.disabled = false;
     loadCharacters();
   } catch (err) {
     statusEl.textContent = "Network error.";
+    addBtn.disabled = false;
   }
 });
 
